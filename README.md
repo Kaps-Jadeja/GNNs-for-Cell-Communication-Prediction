@@ -1,6 +1,5 @@
 # GNNs for Cell-Cell Communication Prediction
 
-**COMP-4740: Advanced Topics in Artificial Intelligence II — Winter 2026**
 
 A systematic comparison of Graph Neural Network architectures for predicting cell-cell communication interactions from single-cell RNA-sequencing data, following the experimental protocol of the SEGCECO reference paper.
 
