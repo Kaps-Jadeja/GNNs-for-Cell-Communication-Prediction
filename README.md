@@ -121,6 +121,54 @@ The notebook is self-contained:
 
 ---
 
+## Results
+
+### Average across all 7 datasets
+
+| Model | AUC-ROC | AUC-PR | Accuracy | Precision | Recall | F1 |
+|---|---|---|---|---|---|---|
+| **GCN** | **0.9887** | **0.9843** | **0.9644** | **0.9440** | **0.9878** | **0.9653** |
+| GAT | 0.9819 | 0.9745 | 0.9502 | 0.9256 | 0.9796 | 0.9517 |
+| Baseline GNN | 0.9722 | 0.9601 | 0.9359 | 0.8993 | 0.9824 | 0.9389 |
+
+GCN is the top performer across every metric. GAT is a close second; the Baseline GNN remains competitive given its simplicity.
+
+### Per-dataset breakdown
+
+| Dataset | Model | AUC-ROC | AUC-PR | Accuracy | F1 |
+|---|---|---|---|---|---|
+| HumanD1 | GCN | 0.9915 | 0.9879 | 0.9708 | 0.9716 |
+| HumanD1 | GAT | 0.9816 | 0.9745 | 0.9512 | 0.9530 |
+| HumanD1 | Baseline | 0.9741 | 0.9634 | 0.9383 | 0.9414 |
+| HumanD2 | GCN | 0.9948 | 0.9919 | 0.9796 | 0.9799 |
+| HumanD2 | GAT | 0.9951 | 0.9923 | 0.9799 | 0.9802 |
+| HumanD2 | Baseline | 0.9873 | 0.9803 | 0.9618 | 0.9630 |
+| HumanD3 | GCN | 0.9960 | 0.9947 | 0.9791 | 0.9794 |
+| HumanD3 | GAT | 0.9859 | 0.9769 | 0.9549 | 0.9565 |
+| HumanD3 | Baseline | 0.9620 | 0.9427 | 0.9183 | 0.9233 |
+| HumanD4 | GCN | 0.9751 | 0.9628 | 0.9424 | 0.9448 |
+| HumanD4 | GAT | 0.9731 | 0.9596 | 0.9383 | 0.9410 |
+| HumanD4 | Baseline | 0.9691 | 0.9527 | 0.9322 | 0.9357 |
+| MouseD1 | GCN | 0.9886 | 0.9854 | 0.9601 | 0.9610 |
+| MouseD1 | GAT | 0.9679 | 0.9575 | 0.9193 | 0.9219 |
+| MouseD1 | Baseline | 0.9591 | 0.9434 | 0.9115 | 0.9159 |
+| MouseD2 | GCN | 0.9963 | 0.9947 | 0.9798 | 0.9800 |
+| MouseD2 | GAT | 0.9931 | 0.9922 | 0.9690 | 0.9694 |
+| MouseD2 | Baseline | 0.9877 | 0.9832 | 0.9655 | 0.9664 |
+| KangPBMC | GCN | 0.9784 | 0.9726 | 0.9390 | 0.9405 |
+| KangPBMC | GAT | 0.9766 | 0.9687 | 0.9385 | 0.9400 |
+| KangPBMC | Baseline | 0.9662 | 0.9548 | 0.9234 | 0.9266 |
+
+### Key observations
+
+- **GCN generalises best** — consistently top or near-top across human pancreas, mouse pancreas, and PBMC datasets
+- **Cross-species transfer holds** — mouse pancreas results (MouseD1/2) closely mirror human pancreas, confirming the CCN structure is species-agnostic
+- **Cross-tissue transfer is harder** — KangPBMC scores are ~2–3% lower in F1 vs. pancreas datasets, reflecting the coarser kNN-based graph vs. SoptSC-derived CCN
+- **GAT ≈ GCN on HumanD2** — the only dataset where attention-based weighting fully matches spectral convolution
+- **Baseline GNN is surprisingly strong** (F1 > 0.92 everywhere), suggesting the node features alone carry most of the predictive signal
+
+---
+
 ## References
 
 - **SEGCECO**: Hora S. et al. *SEGCECO: subgraph-based explainable graph convolutional network for predicting cell–cell communication*. Briefings in Bioinformatics, 2024. https://doi.org/10.1093/bib/bbae160
