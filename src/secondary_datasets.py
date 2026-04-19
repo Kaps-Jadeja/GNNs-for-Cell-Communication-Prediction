@@ -39,7 +39,7 @@ MOUSE_DATASETS = {
     },
 }
 
-KANG_URL  = "https://figshare.com/ndownloader/files/34464122"
+KANG_URL  = "https://api.figshare.com/v2/file/download/34464122"
 KANG_H5AD = os.path.join(DATA_DIR, "kang", "kang_counts_25k.h5ad")
 
 
@@ -117,9 +117,31 @@ def load_kang_pbmc(
     os.makedirs(os.path.dirname(KANG_H5AD), exist_ok=True)
 
     # ── 1. Download ─────────────────────────────────────────────────────────
+    _HDF5_SIG = b"\x89HDF\r\n\x1a\n"
+
+    def _is_valid_hdf5(path):
+        try:
+            with open(path, "rb") as f:
+                return f.read(8) == _HDF5_SIG
+        except Exception:
+            return False
+
+    if os.path.exists(KANG_H5AD) and not _is_valid_hdf5(KANG_H5AD):
+        print("  Cached file is corrupted — removing and re-downloading...")
+        os.remove(KANG_H5AD)
+
     if not os.path.exists(KANG_H5AD):
-        print("  Downloading Kang 2018 PBMC from figshare (~200 MB)...", flush=True)
-        urllib.request.urlretrieve(KANG_URL, KANG_H5AD)
+        print("  Downloading Kang 2018 PBMC from figshare (~38 MB)...", flush=True)
+        req = urllib.request.Request(KANG_URL, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req) as resp, open(KANG_H5AD, "wb") as f:
+            while True:
+                chunk = resp.read(1 << 20)  # 1 MB chunks
+                if not chunk:
+                    break
+                f.write(chunk)
+        if not _is_valid_hdf5(KANG_H5AD):
+            os.remove(KANG_H5AD)
+            raise RuntimeError("Downloaded file is not a valid HDF5 — check network and retry.")
         print("  Download complete.")
 
     print("  Loading Kang 2018 PBMC dataset...")
@@ -175,7 +197,7 @@ def load_kang_pbmc(
     selector  = SelectKBest(mutual_info_classif, k=n_select)
     X_sel     = selector.fit_transform(X, ct_labels).astype(np.float32)
 
-    print(f"  IG feature selection: {X.shape[1]} → {X_sel.shape[1]} genes")
+    print(f"  IG feature selection: {X.shape[1]} -> {X_sel.shape[1]} genes")
 
     # ── 6. Build PyG Data ─────────────────────────────────────────────────────
     n_nodes   = adata.n_obs

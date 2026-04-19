@@ -31,3 +31,13 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Submission artifacts
+brightspace_submission/
+report/
+report_submission.zip
+
+# Misc
+Choosen\ Project\ Title\ and\ Goals.txt
+Project\ Guidelines\ (2).pdf
+Project\ Topics.docx
